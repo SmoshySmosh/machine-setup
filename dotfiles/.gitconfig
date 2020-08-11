@@ -1,48 +1,35 @@
-# This is Git's per-user configuration file.
 [user]
   name = Ethan Pursley
-  email = 
+  email = me+github@ethanpursley.com
 
 [color]
-  # Enable colors in color-supporting terminals
   ui = auto
 
 [core]
-  # VSCode
-  # editor = code --wait
-  # Don't consider trailing space change as a cause for merge conflicts
   whitespace = -trailing-space
+  excludesfile = /Users/ethanpursley/.gitignore
 
 [log]
-  # Use abbrev SHAs whenever possible/relevant instead of full 40 chars
   abbrevCommit = true
-  # Automatically --follow when given a single path
   follow = true
 
 [diff]
-  # Use better, descriptive initials (c, i, w) instead of a/b.
   mnemonicPrefix = true
-  # Show renames/moves as such
   renames = true
-  # When using --word-diff, assume --word-diff-regex=.
   wordRegex = .
-  # Display submodule-related information (commit listings)
   submodule = log
-  # Use VSCode as default diff tool when running `git diff-tool`
   tool = vscode
 
 [difftool "vscode"]
   cmd = code --wait --diff $LOCAL $REMOTE
 
 [fetch]
-  # Auto-fetch submodule changes (sadly, won't auto-update)
   recurseSubmodules = on-demand
 
 [grep]
   break = true
   heading = true
   lineNumber = true
-  # Consider most regexes to be ERE
   extendedRegexp = true
 
 [branch]

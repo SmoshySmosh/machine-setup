@@ -19,7 +19,7 @@ brew "glib"
 brew "gnupg"
 brew "htop"
 brew "jq"
-# brew "mas"
+brew "mas"
 brew "ncdu"
 brew "openssl"
 brew "rsync"
@@ -30,7 +30,6 @@ brew "vim"
 brew "zsh"
 
 # Casks
-cask "amazon-chime"
 cask "appcleaner"
 cask "betterzip"
 cask "discord"
@@ -54,6 +53,6 @@ cask "visual-studio-code"
 cask "zoomus"
 
 # Mac App Store
-# mas "Xcode", id: 497799835 # Xcode
+mas "Xcode", id: 497799835 # Xcode
 
 #Whalebrew (For Later)

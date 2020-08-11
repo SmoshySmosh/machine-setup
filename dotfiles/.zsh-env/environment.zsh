@@ -1,12 +1,13 @@
 # Use this file to store all environment variables
-
+export CLICOLOR=1
 export LSCOLORS=gxfxbEaEBxxEhEhBaDaCaD
+export EDITOR='vim'
 
 # Chrome Driver
 export DETECT_CHROMEDRIVER_VERSION=true
 
 # Python Setup
-# export PYTHONPATH="/usr/local/opt/python@3.8/libexec/bin"
+export PYTHONPATH="/usr/local/opt/python@3.8/libexec/bin"
 
 # Android Development
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
