@@ -2,18 +2,17 @@
 
 # Settings
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-SSH_KEY_DIRECTORY="${SCRIPT_DIR}/dotfiles/.ssh/source-control"
+DOTFILES_DIRECTORY="${SCRIPT_DIR}/dotfiles"
+SSH_KEY_DIRECTORY="${DOTFILES_DIRECTORY}/.ssh/source-control"
 PROJECT_DIRECTORY="${HOME}/Projects"
 OH_MY_ZSH_DIRECTORY="${HOME}/.oh-my-zsh"
 
 echo "Hello $(whoami)! Let's get you set up."
-echo $SCRIPT_DIR
 
 # Generate SSH Key
 if [[ ! -e $SSH_KEY_DIRECTORY ]]; then
   mkdir -p $SSH_KEY_DIRECTORY
   ssh-keygen -t rsa -b 4096 -C "me+github@ethanpursley.com" -f $SSH_KEY_DIRECTORY/github
-  git config --global core.excludesfile ~/.gitignore
 else 
   echo "${SSH_KEY_DIRECTORY} already exists!"
 fi
@@ -49,7 +48,6 @@ else
   echo "${OH_MY_ZSH_DIRECTORY} already exists!"
 fi
 
-
 # Install ZSH Syntax Highlighting
 if [[ ! -e $OH_MY_ZSH_DIRECTORY/custom/plugins/zsh-syntax-highlighting ]]; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
@@ -57,11 +55,32 @@ else
   echo "${OH_MY_ZSH_DIRECTORY}/custom/plugins/zsh-syntax-highlighting already exists!"
 fi
 
+###############################################################################
+# Set Symlinks to Repository Files for Configurations                         #
+###############################################################################
 
-# Symlink dotfiles
-# ln -s "${SCRIPT_DIR}/dotfiles/.zshrc" "${HOME}/.zshrc"
-ln -sfn ${SCRIPT_DIR}/dotfiles/.zsh-env ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/zsh-env
-ln -sfn ${SCRIPT_DIR}/dotfiles/.iterm2 ${HOME}/.iterm2
+# Set ZSH Configuration
+ln -sfn ${DOTFILES_DIRECTORY}/.zshrc ${HOME}/.zshrc
+for f in ${DOTFILES_DIRECTORY}/.zsh-env/*.zsh; do ln -sfn $f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/$(basename -- $f); done
+
+# Set SSH Configuration
+# ln -sfn ${DOTFILES_DIRECTORY}/.ssh ${HOME}/.ssh
+
+# Set iTerm2 Configruation
+ln -sfn ${DOTFILES_DIRECTORY}/.iterm2 ${HOME}/.iterm2
+
+# Set Git Configuration
+for f in ${DOTFILES_DIRECTORY}/.git*; do ln -sfn $f ${HOME}/$(basename -- $f); done
+
+###############################################################################
+# Set GIT Settings                                                            #
+###############################################################################
+
+# Set Global Ignore File
+git config --global core.excludesfile ~/.gitignore
+
+# Set Global Commit Template File
+git config --global commit.template ~/.gitmessage
 
 ###############################################################################
 # Set iTerm2 Defaults & Settings                                              #
@@ -73,138 +92,137 @@ defaults write com.googlecode.iterm2 PrefsCustomFolder -string "${HOME}/.iterm2"
 # Set Load from Custom Preferences Folder
 defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
 
-# Set Save Preferences To Custom Folder when Exiting
-# defaults write com.googlecode.iterm2 NoSyncNeverRemindPrefsChangesLostForFile_selection -int 1
+# Install the Solarized Dark theme for iTerm (Set this if your profile doesn't already include it)
+# open "${SCRIPT_DIR}/settings/iTerm2/Solarized-Dark.itermcolors"
 
-# Set Onboarding to viewed
-# defaults write com.googlecode.iterm2 NoSyncOnboardingWindowHasBeenShown -bool true
+# Only use UTF-8 in Terminal.app
+defaults write com.apple.terminal StringEncodings -array 4
 
-# Set Auto-Update to true
-# defaults write com.googlecode.iterm2 SUEnableAutomaticChecks -bool true
+# Enable Secure Keyboard Entry in Terminal.app
+# See: https://security.stackexchange.com/a/47786/8918
+defaults write com.apple.terminal SecureKeyboardEntry -bool true
 
-# Install the Solarized Dark theme for iTerm
-open "${SCRIPT_DIR}/settings/iTerm2/Solarized-Dark.itermcolors"
+###############################################################################
+# Set macOS Defaults                                                          #
+###############################################################################
 
-# ###############################################################################
-# # Set macOS Defaults                                                          #
-# ###############################################################################
+# Save to disk (not to iCloud) by default
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
-# # Save to disk (not to iCloud) by default
-# defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+# Automatically quit printer app once the print jobs complete
+defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 
-# # Automatically quit printer app once the print jobs complete
-# defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+###############################################################################
+# Dock                                                                        #
+###############################################################################
 
-# ###############################################################################
-# # Dock, Dashboard, and hot corners                                            #
-# ###############################################################################
+# Automatically hide and show the Dock
+defaults write com.apple.dock autohide -bool true
 
-# # Automatically hide and show the Dock
-# defaults write com.apple.dock autohide -bool true
+# Minimize windows into their application’s icon
+defaults write com.apple.dock minimize-to-application -bool true
 
-# # Minimize windows into their application’s icon
-# defaults write com.apple.dock minimize-to-application -bool true
+# Change location to left of the screen
+defaults write com.apple.dock orientation -string "left"
 
-# # Change location to left of the screen
-# defaults write com.apple.dock orientation -string "left"
+# Hide recently opened apps in the dock
+defaults write com.apple.dock how-recents -bool false
 
-# # Hide recently opened apps in the dock
-# defaults write com.apple.dock how-recents -bool false
+###############################################################################
+# Track Pad & Mouse                                                           #
+###############################################################################
 
-# ###############################################################################
-# # Spotlight                                                                   #
-# ###############################################################################
+# Set Scroll Direction: Natural to off
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 
-# # Disable Spotlight indexing for any volume that gets mounted and has not yet
-# # been indexed before.
-# # Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
+# Set Track Pad Tracking Speed to "Fast"
+defaults write NSGlobalDomain com.apple.trackpad.scaling -int 3
+
+# Set Mouse Tracking Speed to "Fast"
+defaults write NSGlobalDomain com.apple.mouse.scaling -int 3
+
+# Set Mouse Scroll Speed to "Fast"
+defaults write NSGlobalDomain com.apple.scrollwheel.scaling -int 3
+
+###############################################################################
+# Time Machine                                                                #
+###############################################################################
+
+# Prevent Time Machine from prompting to use new hard drives as backup volume
+defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+###############################################################################
+# Activity Monitor                                                            #
+###############################################################################
+
+# Show the main window when launching Activity Monitor
+defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
+
+# Show all processes in Activity Monitor
+defaults write com.apple.ActivityMonitor ShowCategory -int 0
+
+# Sort Activity Monitor results by CPU usage
+defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
+defaults write com.apple.ActivityMonitor SortDirection -int 0
+
+###############################################################################
+# Spotlight                                                                   #
+###############################################################################
+
+# Disable Spotlight indexing for any volume that gets mounted and has not yet
+# been indexed before.
+# Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
 # sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
 
-# # Change indexing order and disable some search results
-# # Yosemite-specific search results (remove them if you are using macOS 10.9 or older):
-# #   MENU_DEFINITION
-# #   MENU_CONVERSION
-# #   MENU_EXPRESSION
-# #   MENU_SPOTLIGHT_SUGGESTIONS (send search queries to Apple)
-# #   MENU_WEBSEARCH             (send search queries to Apple)
-# #   MENU_OTHER
-# defaults write com.apple.spotlight orderedItems -array \
-#   '{"enabled" = 1;"name" = "APPLICATIONS";}' \
-#   '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
-#   '{"enabled" = 1;"name" = "DIRECTORIES";}' \
-#   '{"enabled" = 1;"name" = "PDF";}' \
-#   '{"enabled" = 1;"name" = "FONTS";}' \
-#   '{"enabled" = 0;"name" = "DOCUMENTS";}' \
-#   '{"enabled" = 0;"name" = "MESSAGES";}' \
-#   '{"enabled" = 0;"name" = "CONTACT";}' \
-#   '{"enabled" = 0;"name" = "EVENT_TODO";}' \
-#   '{"enabled" = 0;"name" = "IMAGES";}' \
-#   '{"enabled" = 0;"name" = "BOOKMARKS";}' \
-#   '{"enabled" = 0;"name" = "MUSIC";}' \
-#   '{"enabled" = 0;"name" = "MOVIES";}' \
-#   '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
-#   '{"enabled" = 0;"name" = "SPREADSHEETS";}' \
-#   '{"enabled" = 0;"name" = "SOURCE";}' \
-#   '{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
-#   '{"enabled" = 0;"name" = "MENU_OTHER";}' \
-#   '{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
-#   '{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
-#   '{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
-#   '{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
+# Change indexing order and disable some search results
+# Yosemite-specific search results (remove them if you are using macOS 10.9 or older):
+#   MENU_DEFINITION
+#   MENU_CONVERSION
+#   MENU_EXPRESSION
+#   MENU_SPOTLIGHT_SUGGESTIONS (send search queries to Apple)
+#   MENU_WEBSEARCH             (send search queries to Apple)
+#   MENU_OTHER
+defaults write com.apple.spotlight orderedItems -array \
+  '{"enabled" = 1;"name" = "APPLICATIONS";}' \
+  '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
+  '{"enabled" = 1;"name" = "MENU_EXPRESSION";}' \
+  '{"enabled" = 0;"name" = "DIRECTORIES";}' \
+  '{"enabled" = 0;"name" = "PDF";}' \
+  '{"enabled" = 0;"name" = "FONTS";}' \
+  '{"enabled" = 0;"name" = "DOCUMENTS";}' \
+  '{"enabled" = 0;"name" = "MESSAGES";}' \
+  '{"enabled" = 0;"name" = "CONTACT";}' \
+  '{"enabled" = 0;"name" = "EVENT_TODO";}' \
+  '{"enabled" = 0;"name" = "IMAGES";}' \
+  '{"enabled" = 0;"name" = "BOOKMARKS";}' \
+  '{"enabled" = 0;"name" = "MUSIC";}' \
+  '{"enabled" = 0;"name" = "MOVIES";}' \
+  '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
+  '{"enabled" = 0;"name" = "SPREADSHEETS";}' \
+  '{"enabled" = 0;"name" = "SOURCE";}' \
+  '{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
+  '{"enabled" = 0;"name" = "MENU_OTHER";}' \
+  '{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
+  '{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
 
-# # Load new settings before rebuilding the index
-# killall mds > /dev/null 2>&1
+# Load new settings before rebuilding the index
+killall mds > /dev/null 2>&1
 
-# # Make sure indexing is enabled for the main volume
-# sudo mdutil -i on / > /dev/null
+# Make sure indexing is enabled for the main volume
+sudo mdutil -i on / > /dev/null
 
-# # Rebuild the index from scratch
-# sudo mdutil -E / > /dev/null
+# Rebuild the index from scratch
+sudo mdutil -E / > /dev/null
 
-# ###############################################################################
-# # Terminal & iTerm 2                                                          #
-# ###############################################################################
+###############################################################################
+# Kill affected applications                                                  #
+###############################################################################
 
-# # Only use UTF-8 in Terminal.app
-# defaults write com.apple.terminal StringEncodings -array 4
+for app in "Activity Monitor" \
+  "cfprefsd" \
+  "Dock" \
+  "Finder"; do
+  killall "${app}" &> /dev/null
+done
 
-# # Enable Secure Keyboard Entry in Terminal.app
-# # See: https://security.stackexchange.com/a/47786/8918
-# defaults write com.apple.terminal SecureKeyboardEntry -bool true
-
-# # Disable the annoying line marks
-# defaults write com.apple.Terminal ShowLineMarks -int 0
-
-# ###############################################################################
-# # Time Machine                                                                #
-# ###############################################################################
-
-# # Prevent Time Machine from prompting to use new hard drives as backup volume
-# defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
-
-# ###############################################################################
-# # Activity Monitor                                                            #
-# ###############################################################################
-
-# # Show the main window when launching Activity Monitor
-# defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
-
-# # Show all processes in Activity Monitor
-# defaults write com.apple.ActivityMonitor ShowCategory -int 0
-
-# # Sort Activity Monitor results by CPU usage
-# defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
-# defaults write com.apple.ActivityMonitor SortDirection -int 0
-
-# ###############################################################################
-# # Kill affected applications                                                  #
-# ###############################################################################
-
-# for app in "Activity Monitor" \
-#   "Address Book" \
-#   "cfprefsd" \
-#   "Dock" \
-#   "Finder"; do
-#   killall "${app}" &> /dev/null
-# done
-# echo "Done. Note that some of these changes require a logout/restart to take effect."
+echo "Done. Note that some of these changes require a logout/restart to take effect."

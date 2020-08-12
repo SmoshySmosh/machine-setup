@@ -1,0 +1,19 @@
+[
+  "christian-kohler.npm-intellisense",
+  "CoenraadS.bracket-pair-colorizer-2",
+  "dbaeumer.vscode-eslint",
+  "eamodio.gitlens",
+  "esbenp.prettier-vscode",
+  "felixfbecker.php-pack",
+  "foxundermoon.shell-format",
+  "mikestead.dotenv",
+  "ms-azuretools.vscode-docker",
+  "oderwat.indent-rainbow",
+  "PKief.material-icon-theme",
+  "Prisma.vscode-graphql",
+  "redhat.vscode-xml",
+  "redhat.vscode-yaml",
+  "sharat.vscode-brewfile",
+  "VisualStudioExptTeam.vscodeintellicode",
+  "vscode-icons-team.vscode-icons"
+]

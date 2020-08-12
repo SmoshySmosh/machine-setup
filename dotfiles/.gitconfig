@@ -9,6 +9,9 @@
   whitespace = -trailing-space
   excludesfile = /Users/ethanpursley/.gitignore
 
+[commit]
+  template = /Users/ethanpursley/.gitmessage
+
 [log]
   abbrevCommit = true
   follow = true
