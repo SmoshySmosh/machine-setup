@@ -7,10 +7,10 @@
 
 [core]
   whitespace = -trailing-space
-  excludesfile = /Users/ethanpursley/.gitignore
+	excludesfile = /Users/ethanpursley/.gitignore
 
 [commit]
-  template = /Users/ethanpursley/.gitmessage
+	template = /Users/ethanpursley/.gitmessage
 
 [log]
   abbrevCommit = true
